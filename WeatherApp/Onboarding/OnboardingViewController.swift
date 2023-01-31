@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import CoreLocation
 
 class OnboardingViewController: UIViewController {
     
-    
+    var locationManager = CLLocationManager()
     private let backgroundColor = #colorLiteral(red: 0.1254122257, green: 0.3044758141, blue: 0.778311789, alpha: 1)
     private let buttonBackgroundColor = #colorLiteral(red: 0.9473686814, green: 0.4318209291, blue: 0.06725039333, alpha: 1)
     
@@ -25,11 +26,11 @@ class OnboardingViewController: UIViewController {
     private lazy var acceptButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("ИСПОЛЬЗОВАТЬ МЕСТОПОЛОЖЕНИЕ  УСТРОЙСТВА", for: .normal)
+        button.setTitle("ИСПОЛЬЗОВАТЬ МЕСТОПОЛОЖЕНИЕ УСТРОЙСТВА", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         button.backgroundColor = buttonBackgroundColor
         button.layer.cornerRadius = 10
-//        button.addTarget(self, action: #selector(didTapWalletButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapAcceptButton), for: .touchUpInside)
         return button
     }()
     
@@ -92,5 +93,24 @@ class OnboardingViewController: UIViewController {
         
     }
     
+    @objc private func didTapAcceptButton() {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.stopUpdatingLocation()
+        self.locationManager.delegate = self
+    }
+    
 }
 
+extension OnboardingViewController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        print(manager.location as Any)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+        print("Can't get location")
+         
+    }
+}
