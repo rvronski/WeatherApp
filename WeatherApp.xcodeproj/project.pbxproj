@@ -14,6 +14,7 @@
 		45BE244229888E8D00111720 /* WeatherApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 45BE244029888E8D00111720 /* WeatherApp.xcdatamodeld */; };
 		45BE244429888E9400111720 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45BE244329888E9400111720 /* Assets.xcassets */; };
 		45BE244729888E9400111720 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45BE244529888E9400111720 /* LaunchScreen.storyboard */; };
+		45BE244F29889F2A00111720 /* infoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE244E29889F2A00111720 /* infoLabel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		45BE244329888E9400111720 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45BE244629888E9400111720 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		45BE244829888E9400111720 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		45BE244E29889F2A00111720 /* infoLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = infoLabel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				45BE243729888E8D00111720 /* AppDelegate.swift */,
 				45BE243929888E8D00111720 /* SceneDelegate.swift */,
 				45BE243B29888E8D00111720 /* OnboardingViewController.swift */,
+				45BE244E29889F2A00111720 /* infoLabel.swift */,
 				45BE243D29888E8D00111720 /* Main.storyboard */,
 				45BE244329888E9400111720 /* Assets.xcassets */,
 				45BE244529888E9400111720 /* LaunchScreen.storyboard */,
@@ -144,6 +147,7 @@
 				45BE244229888E8D00111720 /* WeatherApp.xcdatamodeld in Sources */,
 				45BE243C29888E8D00111720 /* OnboardingViewController.swift in Sources */,
 				45BE243829888E8D00111720 /* AppDelegate.swift in Sources */,
+				45BE244F29889F2A00111720 /* infoLabel.swift in Sources */,
 				45BE243A29888E8D00111720 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
