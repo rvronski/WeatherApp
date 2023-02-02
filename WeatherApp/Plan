@@ -1,8 +1,8 @@
 
 Apikey: b896c16fafb3a47b68b0a51b99fa50f2
  
-API url: https://api.openweathermap.org/data/2.5/weather?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2
-
+API url: https://api.openweathermap.org/data/2.5/weather?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru
+    https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}&lang=ru
 lat = Optional(37.785834)
 lon= Optional(-122.406417)
 

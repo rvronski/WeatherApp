@@ -73,6 +73,7 @@ class WeatherViewController: UIViewController {
     private lazy var cloudinessLabel = WeatherLabels(size: 14, weight: .regular, color: .white)
     private lazy var humidityLabel = WeatherLabels(size: 14, weight: .regular, color: .white)
     private lazy var windLabel = WeatherLabels(size: 14, weight: .regular, color: .white)
+    private lazy var descriptionLabel = WeatherLabels(size: 16, weight: .regular, color: .white)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,6 +86,7 @@ class WeatherViewController: UIViewController {
         }
         
     }
+    
     private func setupView() {
         self.view.backgroundColor = .white
         self.view.addSubview(self.weatherView)
@@ -102,6 +104,7 @@ class WeatherViewController: UIViewController {
         self.weatherView.addSubview(self.windImageView)
         self.weatherView.addSubview(self.humidityImageView)
         self.weatherView.addSubview(self.cloudinessImageView)
+        self.weatherView.addSubview(self.descriptionLabel)
         
         NSLayoutConstraint.activate([
         
@@ -132,6 +135,9 @@ class WeatherViewController: UIViewController {
             
             self.tempLabel.centerXAnchor.constraint(equalTo: self.maxMinLabel.centerXAnchor),
             self.tempLabel.topAnchor.constraint(equalTo: self.weatherView.topAnchor, constant: 58),
+            
+            self.descriptionLabel.centerXAnchor.constraint(equalTo: self.weatherView.centerXAnchor),
+            self.descriptionLabel.topAnchor.constraint(equalTo: self.tempLabel.bottomAnchor, constant: 5),
             
             self.sunriseLabel.centerXAnchor.constraint(equalTo: self.sunriseImageView.centerXAnchor),
             self.sunriseLabel.topAnchor.constraint(equalTo: self.sunriseImageView.bottomAnchor, constant: 5),
@@ -177,10 +183,11 @@ class WeatherViewController: UIViewController {
         guard let clouds = data.clouds?.all else {return}
         guard let humidity = data.main?.humidity else {return}
         guard let wind = data.wind?.speed else { return }
+        guard let description = data.weather.first?.description else { return }
         let newTemp = temp - 273.15
         let newMaxTemp = maxTemp - 273.15
         let newMinTemp = minTemp - 273.15
-        self.maxMinLabel.text = "\(Int(newMinTemp))˚" + "/" + "\(Int(newMaxTemp))˚"
+        self.maxMinLabel.text = "\(Int(newMinTemp))˚/\(Int(newMaxTemp))˚"
         self.tempLabel.text = "\(Int(newTemp))˚"
         guard let sunrise = data.sys?.sunrise else { return }
         let date = Date(timeIntervalSince1970: TimeInterval(sunrise))
@@ -197,6 +204,16 @@ class WeatherViewController: UIViewController {
         self.windLabel.text = "\(Int(wind)) м/с"
         self.humidityLabel.text = "\(Int(humidity))%"
         self.cloudinessLabel.text = "\(clouds)"
+        self.descriptionLabel.text = description.capitalizedSentence
     }
  
+}
+extension String {
+    var capitalizedSentence: String {
+        let firstLetter = self.prefix(1).capitalized
+        let remainingLetters = self.dropFirst().lowercased()
+        return firstLetter + remainingLetters
+        
+    }
+    
 }

@@ -136,7 +136,7 @@ struct WheatherAnswer: Codable {
 }
 
 func getWeather(completion: @escaping (WheatherAnswer) -> Void) {
-    let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2"
+    let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru"
     guard let url = URL(string: urlString) else {return}
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: url) { data, response, error in
@@ -156,7 +156,6 @@ func getWeather(completion: @escaping (WheatherAnswer) -> Void) {
         }
         do {
            let answer = try JSONDecoder().decode(WheatherAnswer.self, from: data)
-//            guard let temp = answer.main?.tempMax else {return}
             completion(answer)
             print(answer)
         } catch {
