@@ -15,7 +15,8 @@
 		45BE244429888E9400111720 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45BE244329888E9400111720 /* Assets.xcassets */; };
 		45BE244729888E9400111720 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45BE244529888E9400111720 /* LaunchScreen.storyboard */; };
 		45BE244F29889F2A00111720 /* infoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE244E29889F2A00111720 /* infoLabel.swift */; };
-		45BE24532989760000111720 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BE2452298975FF00111720 /* CoreLocation.framework */; };
+		45BE2455298AC81A00111720 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE2454298AC81A00111720 /* WeatherViewController.swift */; };
+		45BE2459298AE06B00111720 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE2458298AE06B00111720 /* NetworkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +30,9 @@
 		45BE244629888E9400111720 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		45BE244829888E9400111720 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		45BE244E29889F2A00111720 /* infoLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = infoLabel.swift; sourceTree = "<group>"; };
-		45BE2452298975FF00111720 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		45BE2454298AC81A00111720 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
+		45BE2456298AD9E600111720 /* Plan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Plan; sourceTree = "<group>"; };
+		45BE2458298AE06B00111720 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +40,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				45BE24532989760000111720 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,7 +51,6 @@
 			children = (
 				45BE243629888E8D00111720 /* WeatherApp */,
 				45BE243529888E8D00111720 /* Products */,
-				45BE2451298975FF00111720 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -67,6 +68,9 @@
 				45BE243729888E8D00111720 /* AppDelegate.swift */,
 				45BE243929888E8D00111720 /* SceneDelegate.swift */,
 				45BE24502988A76800111720 /* Onboarding */,
+				45BE2454298AC81A00111720 /* WeatherViewController.swift */,
+				45BE2456298AD9E600111720 /* Plan */,
+				45BE2458298AE06B00111720 /* NetworkManager.swift */,
 				45BE243D29888E8D00111720 /* Main.storyboard */,
 				45BE244329888E9400111720 /* Assets.xcassets */,
 				45BE244529888E9400111720 /* LaunchScreen.storyboard */,
@@ -83,14 +87,6 @@
 				45BE244E29889F2A00111720 /* infoLabel.swift */,
 			);
 			path = Onboarding;
-			sourceTree = "<group>";
-		};
-		45BE2451298975FF00111720 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				45BE2452298975FF00111720 /* CoreLocation.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -165,7 +161,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				45BE244229888E8D00111720 /* WeatherApp.xcdatamodeld in Sources */,
+				45BE2455298AC81A00111720 /* WeatherViewController.swift in Sources */,
 				45BE243C29888E8D00111720 /* OnboardingViewController.swift in Sources */,
+				45BE2459298AE06B00111720 /* NetworkManager.swift in Sources */,
 				45BE243829888E8D00111720 /* AppDelegate.swift in Sources */,
 				45BE244F29889F2A00111720 /* infoLabel.swift in Sources */,
 				45BE243A29888E8D00111720 /* SceneDelegate.swift in Sources */,

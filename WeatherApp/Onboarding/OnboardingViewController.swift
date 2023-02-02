@@ -53,6 +53,7 @@ class OnboardingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupView()
+       
     }
     
     private func setupView() {
@@ -96,8 +97,9 @@ class OnboardingViewController: UIViewController {
     @objc private func didTapAcceptButton() {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
-        self.locationManager.stopUpdatingLocation()
+        self.locationManager.startUpdatingLocation()
         self.locationManager.delegate = self
+        self.navigationController?.pushViewController(WeatherViewController(), animated: true)
     }
     
 }
@@ -105,7 +107,8 @@ class OnboardingViewController: UIViewController {
 extension OnboardingViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(manager.location as Any)
+        print("lat= \(String(describing: manager.location?.coordinate.latitude))")
+        print("lon= \(String(describing: manager.location?.coordinate.longitude))")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
