@@ -9,6 +9,36 @@ import UIKit
 
 class WeatherViewController: UIViewController {
     private let backgroundColor = #colorLiteral(red: 0.1254122257, green: 0.3044758141, blue: 0.778311789, alpha: 1)
+    private var list = [List]()
+    private lazy var layout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 16
+        layout.minimumInteritemSpacing = 16
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0 , right: 16)
+        return layout
+    }()
+    
+//    private lazy var addWalletButton: UIButton = {
+//        let button = UIButton()
+//        button.translatesAutoresizingMaskIntoConstraints = false
+//        button.setTitle("Создать кошелек", for: .normal)
+//        button.backgroundColor = .systemRed
+//        button.layer.cornerRadius = 20
+//        button.addTarget(self, action: #selector(didTapWalletButton), for: .touchUpInside)
+//        return button
+//    }()
+    
+    private lazy var weatherCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(WeatherCollectionViewCell.self, forCellWithReuseIdentifier: "WeatherCell")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
+    
     private lazy var weatherView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -78,18 +108,32 @@ class WeatherViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupView()
-        getWeather { weather in
+        self.setupNavigationBar()
+        getNowWeather { weather in
             DispatchQueue.main.async {
                 self.wheather(data: weather)
             }
             
         }
-        
+        weatherSoon { list in
+            self.list = list
+            DispatchQueue.main.async {
+                self.weatherCollectionView.reloadData()
+            }
+        }
+    }
+    
+    private func setupNavigationBar() {
+        self.navigationController?.navigationBar.prefersLargeTitles = false
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        self.navigationItem.hidesBackButton = true
+        self.navigationController?.navigationBar.tintColor = .black
     }
     
     private func setupView() {
         self.view.backgroundColor = .white
         self.view.addSubview(self.weatherView)
+        self.view.addSubview(self.weatherCollectionView)
         self.weatherView.addSubview(self.ellipseImageView)
         self.weatherView.addSubview(self.sunriseImageView)
         self.weatherView.addSubview(self.sunsetImageView)
@@ -169,7 +213,10 @@ class WeatherViewController: UIViewController {
             self.cloudinessImageView.heightAnchor.constraint(equalTo: self.weatherView.heightAnchor, multiplier: 0.084),
             self.cloudinessImageView.widthAnchor.constraint(equalTo: self.weatherView.widthAnchor, multiplier: 0.072),
             
-           
+            self.weatherCollectionView.topAnchor.constraint(equalTo: self.weatherView.bottomAnchor, constant: 20),
+            self.weatherCollectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
+            self.weatherCollectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
+            self.weatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.150),
             
         ])
         
@@ -177,25 +224,23 @@ class WeatherViewController: UIViewController {
     }
 
     func wheather(data: WheatherAnswer) {
-        guard let temp = data.main?.temp else { return }
-        guard let maxTemp = data.main?.tempMax else { return }
-        guard let minTemp = data.main?.tempMin else { return }
-        guard let clouds = data.clouds?.all else {return}
-        guard let humidity = data.main?.humidity else {return}
-        guard let wind = data.wind?.speed else { return }
-        guard let description = data.weather.first?.description else { return }
-        let newTemp = temp - 273.15
-        let newMaxTemp = maxTemp - 273.15
-        let newMinTemp = minTemp - 273.15
-        self.maxMinLabel.text = "\(Int(newMinTemp))˚/\(Int(newMaxTemp))˚"
-        self.tempLabel.text = "\(Int(newTemp))˚"
-        guard let sunrise = data.sys?.sunrise else { return }
+        let temp = data.main?.temp ?? 0
+        let maxTemp = data.main?.tempMax ?? 0
+        let minTemp = data.main?.tempMin ?? 0
+        let clouds = data.clouds?.all ?? 0
+        let humidity = data.main?.humidity ?? 0
+        let wind = data.wind?.speed ?? 0
+        let cityName = data.name ?? ""
+        let description = data.weather.first?.description ?? ""
+        self.maxMinLabel.text = "\(Int(minTemp))˚/ \(Int(maxTemp))˚"
+        self.tempLabel.text = "\(Int(temp))˚"
+        let sunrise = data.sys?.sunrise ?? 0
         let date = Date(timeIntervalSince1970: TimeInterval(sunrise))
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "H:MM"
         let sunriseTime = dateFormatter.string(from: date)
         self.sunsetLabel.text = sunriseTime
-        guard let sunset = data.sys?.sunset else { return }
+        let sunset = data.sys?.sunset ?? 0
         let date1 = Date(timeIntervalSince1970: TimeInterval(sunset))
         let formatter = DateFormatter()
         formatter.dateFormat = "H:MM"
@@ -205,15 +250,26 @@ class WeatherViewController: UIViewController {
         self.humidityLabel.text = "\(Int(humidity))%"
         self.cloudinessLabel.text = "\(clouds)"
         self.descriptionLabel.text = description.capitalizedSentence
+        self.navigationItem.title = cityName
     }
  
 }
-extension String {
-    var capitalizedSentence: String {
-        let firstLetter = self.prefix(1).capitalized
-        let remainingLetters = self.dropFirst().lowercased()
-        return firstLetter + remainingLetters
-        
+extension WeatherViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.list.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherCell", for: indexPath) as! WeatherCollectionViewCell
+        cell.setup(list: list[indexPath.row])
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let itemWidth = (collectionView.frame.width - 32) / 6.2
+        let itemHeigth = itemWidth * 2
+        return CGSize(width: itemWidth, height: itemHeigth )
     }
     
 }

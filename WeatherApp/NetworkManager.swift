@@ -64,7 +64,7 @@ struct Coords: Codable {
     var lat: Double
 }
 
-struct Wheather: Codable {
+struct Weather: Codable {
     var id: Int?
     var main: String?
     var description: String?
@@ -120,7 +120,7 @@ struct Sys: Codable {
 
 struct WheatherAnswer: Codable {
     var coord: Coords
-    var weather: [Wheather]
+    var weather: [Weather]
     var main: Main?
     var visibility: Int?
     var wind: Wind?
@@ -135,8 +135,91 @@ struct WheatherAnswer: Codable {
     
 }
 
-func getWeather(completion: @escaping (WheatherAnswer) -> Void) {
-    let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru"
+struct List: Codable {
+    var dt: Int?
+    var main: Main?
+    var weather: [Weather]?
+    var clouds: Clouds?
+    var wind: Wind?
+    var dtTxt: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case dt
+        case main
+        case weather
+        case clouds
+        case wind
+        case dtTxt = "dt_txt"
+    }
+}
+
+struct Temp: Codable {
+    var day: Double
+    var min: Double
+    var max: Double
+    var night: Double
+    var eve: Double
+    var morn: Double
+}
+
+struct FeelLike: Codable {
+    var day: Double
+    var night: Double
+    var eve: Double
+    var morn: Double
+}
+
+struct Daily: Codable {
+    var sunrise: Int
+    var sunset: Int
+    var moonrise: Int
+    var moonset: Int
+    var moonPhase: Double
+    var dt: Int
+    var temp: Temp
+    var feelsLike: FeelLike
+    var pressure: Int
+    var humidity: Int
+    var dewPoint: Double
+    var windSpeed: Double
+    var weather: [Weather]
+    var clouds: Int
+    var pop: Double
+    var rain: Double
+    var uvi: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case sunrise
+        case sunset
+        case moonrise
+        case moonset
+        case moonPhase = "moon_phase"
+        case dt
+        case temp
+        case feelsLike = "feels_like"
+        case pressure
+        case humidity
+        case dewPoint = "dew_point"
+        case windSpeed = "wind_speed"
+        case weather
+        case clouds
+        case pop
+        case rain
+        case uvi
+    }
+}
+
+struct DailyAnswer: Codable {
+    var daily: [Daily]
+}
+
+struct SoonAnswer: Codable {
+    var cnt: Int
+    var list: [List]
+}
+
+func getNowWeather(completion: @escaping (WheatherAnswer) -> Void) {
+    let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
     guard let url = URL(string: urlString) else {return}
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: url) { data, response, error in
@@ -157,6 +240,69 @@ func getWeather(completion: @escaping (WheatherAnswer) -> Void) {
         do {
            let answer = try JSONDecoder().decode(WheatherAnswer.self, from: data)
             completion(answer)
+            print(answer)
+        } catch {
+            print(error)
+        }
+    }
+    task.resume()
+}
+//api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+
+func weatherSoon(completion: @escaping (_ list: [List]) -> Void) {
+    let urlString =  "https://api.openweathermap.org/data/2.5/forecast?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
+    guard let url = URL(string: urlString) else {return}
+    let session = URLSession(configuration: .default)
+    let task = session.dataTask(with: url) { data, response, error in
+        if let error {
+            print(error.localizedDescription)
+            return
+        }
+        
+        let statusCode = (response as? HTTPURLResponse)?.statusCode
+        if statusCode != 200 {
+            print("Status Code = \(String(describing: statusCode))")
+            return
+        }
+        guard let data else {
+            print("data = nil")
+            return
+        }
+        do {
+           let answer = try JSONDecoder().decode(SoonAnswer.self, from: data)
+            let list = answer.list
+            completion(list)
+            print(answer)
+        } catch {
+            print(error)
+        }
+    }
+    task.resume()
+}
+
+func weatherDaily(completion: @escaping (_ daily: [Daily]) -> Void) {
+    let urlString =  "https://api.openweathermap.org/data/3.0/onecall?lat={37.785834&lon=-122.406417&exclude=daily&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
+    guard let url = URL(string: urlString) else {return}
+    let session = URLSession(configuration: .default)
+    let task = session.dataTask(with: url) { data, response, error in
+        if let error {
+            print(error.localizedDescription)
+            return
+        }
+        
+        let statusCode = (response as? HTTPURLResponse)?.statusCode
+        if statusCode != 200 {
+            print("Status Code = \(String(describing: statusCode))")
+            return
+        }
+        guard let data else {
+            print("data = nil")
+            return
+        }
+        do {
+           let answer = try JSONDecoder().decode(DailyAnswer.self, from: data)
+            let daily = answer.daily
+            completion(daily)
             print(answer)
         } catch {
             print(error)
