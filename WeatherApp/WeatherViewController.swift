@@ -6,19 +6,14 @@
 //
 
 import UIKit
+import CoreLocation
 
 class WeatherViewController: UIViewController {
     private let backgroundColor = #colorLiteral(red: 0.1254122257, green: 0.3044758141, blue: 0.778311789, alpha: 1)
     private var list = [List]()
-    private lazy var layout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 16
-        layout.minimumInteritemSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0 , right: 16)
-        return layout
-    }()
-    
+    private var daily = [Daily]()
+    private var locationManager = CLLocationManager()
+//    private var timezone = 0
 //    private lazy var addWalletButton: UIButton = {
 //        let button = UIButton()
 //        button.translatesAutoresizingMaskIntoConstraints = false
@@ -28,6 +23,31 @@ class WeatherViewController: UIViewController {
 //        button.addTarget(self, action: #selector(didTapWalletButton), for: .touchUpInside)
 //        return button
 //    }()
+    
+    private lazy var dailyTableView: UITableView = {
+        var tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 50
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.backgroundColor = .white
+        tableView.showsVerticalScrollIndicator = false
+//        tableView.setContentOffset(CGPoint(x: 16, y: 16), animated: true)
+//        tableView.automaticallyAdjustsScrollIndicatorInsets = false
+        tableView.contentInset = UIEdgeInsets(top: -16, left: 0, bottom: -16, right: 0)
+        tableView.register(DailyTableViewCell.self, forCellReuseIdentifier: "DailyCell")
+        return tableView
+    }()
+    
+    private lazy var layout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 16
+        layout.minimumInteritemSpacing = 16
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0 , right: 16)
+        return layout
+    }()
     
     private lazy var weatherCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.layout)
@@ -89,7 +109,7 @@ class WeatherViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         let formatter = DateFormatter()
-        formatter.dateFormat = "HH:MM, E d MMMM"
+        formatter.dateFormat = "HH:mm, E d MMMM"
         let dateString = formatter.string(from: Date())
         label.text = dateString
         label.textColor = .yellow
@@ -109,23 +129,14 @@ class WeatherViewController: UIViewController {
         super.viewDidLoad()
         self.setupView()
         self.setupNavigationBar()
-        getNowWeather { weather in
-            DispatchQueue.main.async {
-                self.wheather(data: weather)
-            }
-            
-        }
-        weatherSoon { list in
-            self.list = list
-            DispatchQueue.main.async {
-                self.weatherCollectionView.reloadData()
-            }
-        }
+        self.location()
+        UserDefaults.standard.set(true, forKey: "firstTime")
+        
     }
     
     private func setupNavigationBar() {
         self.navigationController?.navigationBar.prefersLargeTitles = false
-        navigationController?.setNavigationBarHidden(false, animated: false)
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.hidesBackButton = true
         self.navigationController?.navigationBar.tintColor = .black
     }
@@ -134,6 +145,7 @@ class WeatherViewController: UIViewController {
         self.view.backgroundColor = .white
         self.view.addSubview(self.weatherView)
         self.view.addSubview(self.weatherCollectionView)
+        self.view.addSubview(self.dailyTableView)
         self.weatherView.addSubview(self.ellipseImageView)
         self.weatherView.addSubview(self.sunriseImageView)
         self.weatherView.addSubview(self.sunsetImageView)
@@ -218,12 +230,26 @@ class WeatherViewController: UIViewController {
             self.weatherCollectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
             self.weatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.150),
             
+            self.dailyTableView.topAnchor.constraint(equalTo: self.weatherCollectionView.bottomAnchor, constant: 16),
+            self.dailyTableView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
+            self.dailyTableView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
+            self.dailyTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            
+            
+            
         ])
         
         
     }
+    
+    private func location() {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.startUpdatingLocation()
+        self.locationManager.delegate = self
+    }
+    
 
-    func wheather(data: WheatherAnswer) {
+   private func wheather(data: WheatherAnswer) {
         let temp = data.main?.temp ?? 0
         let maxTemp = data.main?.tempMax ?? 0
         let minTemp = data.main?.tempMin ?? 0
@@ -235,17 +261,30 @@ class WeatherViewController: UIViewController {
         self.maxMinLabel.text = "\(Int(minTemp))˚/ \(Int(maxTemp))˚"
         self.tempLabel.text = "\(Int(temp))˚"
         let sunrise = data.sys?.sunrise ?? 0
-        let date = Date(timeIntervalSince1970: TimeInterval(sunrise))
+        var correctTime = 0
+        if timezone < 0 {
+            correctTime = timezone + sunrise
+        } else {
+            correctTime = sunrise + timezone
+        }
+        let date = Date(timeIntervalSince1970: TimeInterval(correctTime))
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "H:MM"
+        dateFormatter.dateFormat = "H:mm"
+        dateFormatter.timeZone = .gmt
         let sunriseTime = dateFormatter.string(from: date)
-        self.sunsetLabel.text = sunriseTime
         let sunset = data.sys?.sunset ?? 0
-        let date1 = Date(timeIntervalSince1970: TimeInterval(sunset))
+        if timezone < 0 {
+            correctTime = timezone + sunset
+        } else {
+            correctTime = sunset + timezone
+        }
+        let date1 = Date(timeIntervalSince1970: TimeInterval(correctTime))
         let formatter = DateFormatter()
-        formatter.dateFormat = "H:MM"
+        formatter.timeZone = .gmt
+        formatter.dateFormat = "H:mm"
         let sunsetTime = dateFormatter.string(from: date1)
-        self.sunriseLabel.text = sunsetTime
+        self.sunsetLabel.text = sunsetTime
+        self.sunriseLabel.text = sunriseTime
         self.windLabel.text = "\(Int(wind)) м/с"
         self.humidityLabel.text = "\(Int(humidity))%"
         self.cloudinessLabel.text = "\(clouds)"
@@ -272,4 +311,58 @@ extension WeatherViewController: UICollectionViewDelegateFlowLayout, UICollectio
         return CGSize(width: itemWidth, height: itemHeigth )
     }
     
+}
+extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return daily.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return daily.count
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "DailyCell", for: indexPath) as! DailyTableViewCell
+        cell.setup(data: daily[indexPath.section])
+        return cell
+    }
+    
+    
+}
+extension WeatherViewController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let lat = manager.location?.coordinate.latitude ?? 0
+        let lon = manager.location?.coordinate.longitude ?? 0
+        getNowWeather(lat: lat, lon: lon) { weather in
+            let timeZone = weather.timezone ?? 0
+            timezone = timeZone
+            DispatchQueue.main.async {
+                self.wheather(data: weather)
+            }
+            
+        }
+        weatherSoon(lat: lat, lon: lon) { list in
+            self.list = list
+            DispatchQueue.main.async {
+                self.weatherCollectionView.reloadData()
+            }
+        }
+        weatherDaily(lat: lat, lon: lon) { daily in
+            self.daily = daily
+            DispatchQueue.main.async {
+                self.dailyTableView.reloadData()
+            }
+        }
+        
+      
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+        print("Can't get location")
+         
+    }
 }

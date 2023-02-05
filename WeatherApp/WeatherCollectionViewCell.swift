@@ -38,8 +38,15 @@ class WeatherCollectionViewCell: UICollectionViewCell {
     func setup(list: List) {
         let image = list.weather?.first?.icon ?? ""
         let time = list.dt ?? 0
-        let date = Date(timeIntervalSince1970: TimeInterval(time))
+        var correctTime = 0
+        if timezone < 0 {
+            correctTime = timezone + time
+        } else {
+            correctTime = time + timezone
+        }
+        let date = Date(timeIntervalSince1970: TimeInterval(correctTime))
         let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = .gmt
         dateFormatter.dateFormat = "HH:mm"
         let newTime = dateFormatter.string(from: date)
         let temp = list.main?.temp ?? 0

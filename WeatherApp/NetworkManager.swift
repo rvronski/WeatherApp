@@ -170,23 +170,20 @@ struct FeelLike: Codable {
 }
 
 struct Daily: Codable {
-    var sunrise: Int
-    var sunset: Int
-    var moonrise: Int
-    var moonset: Int
-    var moonPhase: Double
-    var dt: Int
-    var temp: Temp
-    var feelsLike: FeelLike
-    var pressure: Int
-    var humidity: Int
-    var dewPoint: Double
-    var windSpeed: Double
-    var weather: [Weather]
-    var clouds: Int
-    var pop: Double
-    var rain: Double
-    var uvi: Double
+    var sunrise: Int?
+    var sunset: Int?
+    var moonrise: Int?
+    var moonset: Int?
+    var moonPhase: Double?
+    var dt: Int?
+    var temp: Temp?
+    var feelsLike: FeelLike?
+    var pressure: Int?
+    var humidity: Int?
+    var dewPoint: Double?
+    var windSpeed: Double?
+    var weather: [Weather]?
+    
     
     enum CodingKeys: String, CodingKey {
         case sunrise
@@ -202,15 +199,18 @@ struct Daily: Codable {
         case dewPoint = "dew_point"
         case windSpeed = "wind_speed"
         case weather
-        case clouds
-        case pop
-        case rain
-        case uvi
+       
     }
 }
 
 struct DailyAnswer: Codable {
-    var daily: [Daily]
+    var timezoneOffset: Int?
+    var daily: [Daily]?
+    
+    enum CodingKeys: String, CodingKey {
+        case timezoneOffset = "timezone_offset"
+        case daily
+    }
 }
 
 struct SoonAnswer: Codable {
@@ -218,8 +218,11 @@ struct SoonAnswer: Codable {
     var list: [List]
 }
 
-func getNowWeather(completion: @escaping (WheatherAnswer) -> Void) {
-    let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
+//var lat: Double = 0
+//var lon: Double = 0
+
+func getNowWeather(lat:Double, lon: Double,  completion: @escaping (WheatherAnswer) -> Void) {
+    let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
     guard let url = URL(string: urlString) else {return}
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: url) { data, response, error in
@@ -249,8 +252,8 @@ func getNowWeather(completion: @escaping (WheatherAnswer) -> Void) {
 }
 //api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
 
-func weatherSoon(completion: @escaping (_ list: [List]) -> Void) {
-    let urlString =  "https://api.openweathermap.org/data/2.5/forecast?lat=37.785834&lon=-122.406417&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
+func weatherSoon(lat:Double, lon: Double, completion: @escaping (_ list: [List]) -> Void) {
+    let urlString =  "https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
     guard let url = URL(string: urlString) else {return}
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: url) { data, response, error in
@@ -280,8 +283,8 @@ func weatherSoon(completion: @escaping (_ list: [List]) -> Void) {
     task.resume()
 }
 
-func weatherDaily(completion: @escaping (_ daily: [Daily]) -> Void) {
-    let urlString =  "https://api.openweathermap.org/data/3.0/onecall?lat={37.785834&lon=-122.406417&exclude=daily&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
+func weatherDaily(lat:Double, lon: Double, completion: @escaping (_ daily: [Daily]) -> Void) {
+    let urlString =  "https://api.openweathermap.org/data/3.0/onecall?lat=\(lat)&lon=\(lon)&exclude=current,minutely,hourly,alerts&appid=a4703dd072fe915e8deaafaf6d16b222&lang=ru&units=metric"
     guard let url = URL(string: urlString) else {return}
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: url) { data, response, error in
@@ -301,9 +304,10 @@ func weatherDaily(completion: @escaping (_ daily: [Daily]) -> Void) {
         }
         do {
            let answer = try JSONDecoder().decode(DailyAnswer.self, from: data)
-            let daily = answer.daily
+            print("🍎 \(answer)")
+            guard let daily = answer.daily else {return}
+            print(daily)
             completion(daily)
-            print(answer)
         } catch {
             print(error)
         }

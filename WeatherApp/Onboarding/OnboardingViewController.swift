@@ -10,6 +10,8 @@ import CoreLocation
 
 class OnboardingViewController: UIViewController {
     
+    var isFirstTime = UserDefaults.standard.bool(forKey: "firstTime")
+    
     var locationManager = CLLocationManager()
     private let backgroundColor = #colorLiteral(red: 0.1254122257, green: 0.3044758141, blue: 0.778311789, alpha: 1)
     private let buttonBackgroundColor = #colorLiteral(red: 0.9473686814, green: 0.4318209291, blue: 0.06725039333, alpha: 1)
@@ -56,6 +58,13 @@ class OnboardingViewController: UIViewController {
        
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if isFirstTime == true {
+            self.navigationController?.pushViewController(WeatherViewController(), animated: true)
+        }
+    }
+    
     private func setupView() {
         self.view.backgroundColor = self.backgroundColor
         self.view.addSubview(self.onboardingImageView)
@@ -95,25 +104,10 @@ class OnboardingViewController: UIViewController {
     }
     
     @objc private func didTapAcceptButton() {
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
-        self.locationManager.startUpdatingLocation()
-        self.locationManager.delegate = self
         self.navigationController?.pushViewController(WeatherViewController(), animated: true)
     }
     
 }
 
-extension OnboardingViewController: CLLocationManagerDelegate {
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print("lat= \(String(describing: manager.location?.coordinate.latitude))")
-        print("lon= \(String(describing: manager.location?.coordinate.longitude))")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error)
-        print("Can't get location")
-         
-    }
-}
+

@@ -16,7 +16,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: windowScene)
         let onboardingVC = UINavigationController(rootViewController: OnboardingViewController())
-        self.window?.rootViewController = onboardingVC
+        let weatherVC = UINavigationController(rootViewController: WeatherViewController())
+        if UserDefaults.standard.bool(forKey: "firstTime") {
+            self.window?.rootViewController = weatherVC
+        } else {
+            self.window?.rootViewController = onboardingVC
+        }
         self.window?.makeKeyAndVisible()
     }
 
