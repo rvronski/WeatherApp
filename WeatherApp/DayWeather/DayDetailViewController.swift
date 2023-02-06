@@ -32,6 +32,7 @@ class DayDetailViewController: UIViewController {
         tableView.estimatedRowHeight = 50
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(DayTableViewCell.self, forCellReuseIdentifier: "Cell")
+        tableView.register(DayHeaderView.self, forHeaderFooterViewReuseIdentifier: "DayHeader")
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -116,6 +117,24 @@ class DayDetailViewController: UIViewController {
     }
 }
 extension DayDetailViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "DayHeader") as? DayHeaderView else { return nil }
+        let dayTemp = daily[index].temp?.day ?? 0
+        let nightTemp = daily[index].temp?.night ?? 0
+        let dayNewTemp = "\(Int(dayTemp))˚"
+        let nightNewTemp = "\(Int(nightTemp))˚"
+        let description = daily[index].weather?.first?.description ?? ""
+        let image = daily[index].weather?.first?.icon ?? ""
+        if section == 0 {
+            headerView.setup(dayNight: "День", temp: dayNewTemp, description: description.capitalizedSentence, image: image)
+        } else if section == 1 {
+            headerView.setup(dayNight: "Ночь", temp: nightNewTemp, description: description.capitalizedSentence, image: image)
+        }
+        
+        return headerView
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.daily.count
     }

@@ -24,6 +24,7 @@
 		45BE24632990023E00111720 /* DayDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE24622990023E00111720 /* DayDetailViewController.swift */; };
 		45BE24652990038500111720 /* DayDetailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE24642990038500111720 /* DayDetailCollectionViewCell.swift */; };
 		45BE246929906EB500111720 /* DayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE246829906EB500111720 /* DayTableViewCell.swift */; };
+		45BE246B29908C6C00111720 /* DayHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE246A29908C6C00111720 /* DayHeaderView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		45BE24622990023E00111720 /* DayDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayDetailViewController.swift; sourceTree = "<group>"; };
 		45BE24642990038500111720 /* DayDetailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayDetailCollectionViewCell.swift; sourceTree = "<group>"; };
 		45BE246829906EB500111720 /* DayTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTableViewCell.swift; sourceTree = "<group>"; };
+		45BE246A29908C6C00111720 /* DayHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayHeaderView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				45BE24622990023E00111720 /* DayDetailViewController.swift */,
 				45BE24642990038500111720 /* DayDetailCollectionViewCell.swift */,
 				45BE246829906EB500111720 /* DayTableViewCell.swift */,
+				45BE246A29908C6C00111720 /* DayHeaderView.swift */,
 			);
 			path = DayWeather;
 			sourceTree = "<group>";
@@ -205,6 +208,7 @@
 				45BE2455298AC81A00111720 /* WeatherViewController.swift in Sources */,
 				45BE243C29888E8D00111720 /* OnboardingViewController.swift in Sources */,
 				45BE2459298AE06B00111720 /* NetworkManager.swift in Sources */,
+				45BE246B29908C6C00111720 /* DayHeaderView.swift in Sources */,
 				45BE243829888E8D00111720 /* AppDelegate.swift in Sources */,
 				45BE244F29889F2A00111720 /* infoLabel.swift in Sources */,
 				45BE245B298C0EF900111720 /* String.swift in Sources */,
