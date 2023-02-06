@@ -51,6 +51,8 @@ class DailyTableViewCell: UITableViewCell {
     private func setupView() {
         self.contentView.backgroundColor = #colorLiteral(red: 0.9141461849, green: 0.9332635999, blue: 0.9784278274, alpha: 1)
         self.contentView.layer.cornerRadius = 10
+        self.contentView.layer.borderWidth = 2
+        self.contentView.layer.borderColor = UIColor.white.cgColor
         self.contentView.addSubview(self.iconImageView)
         self.contentView.addSubview(self.dateLabel)
         self.contentView.addSubview(self.descriptionLabel)

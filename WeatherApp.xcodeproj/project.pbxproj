@@ -25,6 +25,8 @@
 		45BE24652990038500111720 /* DayDetailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE24642990038500111720 /* DayDetailCollectionViewCell.swift */; };
 		45BE246929906EB500111720 /* DayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE246829906EB500111720 /* DayTableViewCell.swift */; };
 		45BE246B29908C6C00111720 /* DayHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE246A29908C6C00111720 /* DayHeaderView.swift */; };
+		45BE246D2991495900111720 /* DayFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE246C2991495900111720 /* DayFooterView.swift */; };
+		45BE246F29915D5200111720 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE246E29915D5200111720 /* Formatters.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +51,8 @@
 		45BE24642990038500111720 /* DayDetailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayDetailCollectionViewCell.swift; sourceTree = "<group>"; };
 		45BE246829906EB500111720 /* DayTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTableViewCell.swift; sourceTree = "<group>"; };
 		45BE246A29908C6C00111720 /* DayHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayHeaderView.swift; sourceTree = "<group>"; };
+		45BE246C2991495900111720 /* DayFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayFooterView.swift; sourceTree = "<group>"; };
+		45BE246E29915D5200111720 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +128,8 @@
 				45BE24622990023E00111720 /* DayDetailViewController.swift */,
 				45BE24642990038500111720 /* DayDetailCollectionViewCell.swift */,
 				45BE246829906EB500111720 /* DayTableViewCell.swift */,
+				45BE246C2991495900111720 /* DayFooterView.swift */,
+				45BE246E29915D5200111720 /* Formatters.swift */,
 				45BE246A29908C6C00111720 /* DayHeaderView.swift */,
 			);
 			path = DayWeather;
@@ -206,6 +212,7 @@
 				45BE245F298EB7EF00111720 /* DailyTableViewCell.swift in Sources */,
 				45BE244229888E8D00111720 /* WeatherApp.xcdatamodeld in Sources */,
 				45BE2455298AC81A00111720 /* WeatherViewController.swift in Sources */,
+				45BE246D2991495900111720 /* DayFooterView.swift in Sources */,
 				45BE243C29888E8D00111720 /* OnboardingViewController.swift in Sources */,
 				45BE2459298AE06B00111720 /* NetworkManager.swift in Sources */,
 				45BE246B29908C6C00111720 /* DayHeaderView.swift in Sources */,
@@ -213,6 +220,7 @@
 				45BE244F29889F2A00111720 /* infoLabel.swift in Sources */,
 				45BE245B298C0EF900111720 /* String.swift in Sources */,
 				45BE2461298F360A00111720 /* TimeZone.swift in Sources */,
+				45BE246F29915D5200111720 /* Formatters.swift in Sources */,
 				45BE243A29888E8D00111720 /* SceneDelegate.swift in Sources */,
 				45BE24652990038500111720 /* DayDetailCollectionViewCell.swift in Sources */,
 			);

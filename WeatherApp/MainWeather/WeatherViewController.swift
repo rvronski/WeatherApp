@@ -27,7 +27,7 @@ class WeatherViewController: UIViewController {
 //    }()
     
     private lazy var dailyTableView: UITableView = {
-        var tableView = UITableView(frame: .zero, style: .insetGrouped)
+        var tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50
@@ -37,7 +37,7 @@ class WeatherViewController: UIViewController {
         tableView.showsVerticalScrollIndicator = false
 //        tableView.setContentOffset(CGPoint(x: 16, y: 16), animated: true)
 //        tableView.automaticallyAdjustsScrollIndicatorInsets = false
-        tableView.contentInset = UIEdgeInsets(top: -16, left: 0, bottom: -16, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         tableView.register(DailyTableViewCell.self, forCellReuseIdentifier: "DailyCell")
         return tableView
     }()
@@ -294,28 +294,9 @@ class WeatherViewController: UIViewController {
         self.maxMinLabel.text = "\(Int(minTemp))˚/ \(Int(maxTemp))˚"
         self.tempLabel.text = "\(Int(temp))˚"
         let sunrise = data.sys?.sunrise ?? 0
-        var correctTime = 0
-        if timezone < 0 {
-            correctTime = timezone + sunrise
-        } else {
-            correctTime = sunrise + timezone
-        }
-        let date = Date(timeIntervalSince1970: TimeInterval(correctTime))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "H:mm"
-        dateFormatter.timeZone = .gmt
-        let sunriseTime = dateFormatter.string(from: date)
+        let sunriseTime = unixTimeFormatter(time: sunrise)
         let sunset = data.sys?.sunset ?? 0
-        if timezone < 0 {
-            correctTime = timezone + sunset
-        } else {
-            correctTime = sunset + timezone
-        }
-        let date1 = Date(timeIntervalSince1970: TimeInterval(correctTime))
-        let formatter = DateFormatter()
-        formatter.timeZone = .gmt
-        formatter.dateFormat = "H:mm"
-        let sunsetTime = dateFormatter.string(from: date1)
+        let sunsetTime = unixTimeFormatter(time: sunset)
         self.sunsetLabel.text = sunsetTime
         self.sunriseLabel.text = sunriseTime
         self.windLabel.text = "\(Int(wind)) м/с"
@@ -347,17 +328,17 @@ extension WeatherViewController: UICollectionViewDelegateFlowLayout, UICollectio
 }
 extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return daily.count
-    }
-    
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return daily.count
+//    }
+//
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return self.daily.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DailyCell", for: indexPath) as! DailyTableViewCell
-        cell.setup(data: daily[indexPath.section])
+        cell.setup(data: daily[indexPath.row])
         return cell
     }
     

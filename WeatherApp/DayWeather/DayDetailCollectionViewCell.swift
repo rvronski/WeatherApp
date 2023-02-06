@@ -31,7 +31,7 @@ class DayDetailCollectionViewCell: UICollectionViewCell {
         let day = daily.dt ?? 0
         let date = Date(timeIntervalSince1970: TimeInterval(day))
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "d/MM"
+        dateFormatter.dateFormat = "d/MM E"
         let newDay = dateFormatter.string(from: date)
         self.dayLabel.text = newDay
     }

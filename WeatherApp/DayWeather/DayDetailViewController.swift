@@ -33,6 +33,8 @@ class DayDetailViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(DayTableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.register(DayHeaderView.self, forHeaderFooterViewReuseIdentifier: "DayHeader")
+        tableView.register(DayFooterView.self, forHeaderFooterViewReuseIdentifier: "DayFooter")
+//        tableView.register(UITableViewHeaderFooterView.self, forCellReuseIdentifier: "DefaultFooter")
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -118,22 +120,7 @@ class DayDetailViewController: UIViewController {
 }
 extension DayDetailViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "DayHeader") as? DayHeaderView else { return nil }
-        let dayTemp = daily[index].temp?.day ?? 0
-        let nightTemp = daily[index].temp?.night ?? 0
-        let dayNewTemp = "\(Int(dayTemp))˚"
-        let nightNewTemp = "\(Int(nightTemp))˚"
-        let description = daily[index].weather?.first?.description ?? ""
-        let image = daily[index].weather?.first?.icon ?? ""
-        if section == 0 {
-            headerView.setup(dayNight: "День", temp: dayNewTemp, description: description.capitalizedSentence, image: image)
-        } else if section == 1 {
-            headerView.setup(dayNight: "Ночь", temp: nightNewTemp, description: description.capitalizedSentence, image: image)
-        }
-        
-        return headerView
-    }
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.daily.count
@@ -169,6 +156,41 @@ extension DayDetailViewController: UICollectionViewDelegateFlowLayout, UICollect
     
 }
 extension DayDetailViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "DayFooter") as? DayFooterView else { return nil }
+//        let defoultFooter = tableView.dequeueReusableHeaderFooterView(withIdentifier: "DefaultFooter")
+        if section == 0 {
+            return nil
+        } else if section == 1 {
+            footerView.setup(daily: self.daily[index])
+            return footerView
+        }
+        return footerView
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "DayHeader") as? DayHeaderView else { return nil }
+        
+        let dayTemp = daily[index].temp?.day ?? 0
+        let nightTemp = daily[index].temp?.night ?? 0
+        let dayNewTemp = "\(Int(dayTemp))˚"
+        let nightNewTemp = "\(Int(nightTemp))˚"
+        let description = daily[index].weather?.first?.description ?? ""
+        let image = daily[index].weather?.first?.icon ?? ""
+        if section == 0 {
+            headerView.setup(dayNight: "День", temp: dayNewTemp, description: description.capitalizedSentence, image: image)
+        } else if section == 1 {
+            headerView.setup(dayNight: "Ночь", temp: nightNewTemp, description: description.capitalizedSentence, image: image)
+           
+        }
+        
+    
+        
+        return headerView
+       
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
