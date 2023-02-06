@@ -183,6 +183,9 @@ struct Daily: Codable {
     var dewPoint: Double?
     var windSpeed: Double?
     var weather: [Weather]?
+    var clouds: Int?
+    var uvi: Double?
+    var pop: Double?
     
     
     enum CodingKeys: String, CodingKey {
@@ -199,6 +202,9 @@ struct Daily: Codable {
         case dewPoint = "dew_point"
         case windSpeed = "wind_speed"
         case weather
+        case clouds
+        case uvi
+        case pop
        
     }
 }

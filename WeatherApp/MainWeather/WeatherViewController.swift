@@ -13,7 +13,9 @@ class WeatherViewController: UIViewController {
     private var list = [List]()
     private var daily = [Daily]()
     private var locationManager = CLLocationManager()
-//    private var timezone = 0
+    private var lat: Double = 0
+    private var lon: Double = 0
+  
 //    private lazy var addWalletButton: UIButton = {
 //        let button = UIButton()
 //        button.translatesAutoresizingMaskIntoConstraints = false
@@ -129,7 +131,16 @@ class WeatherViewController: UIViewController {
         super.viewDidLoad()
         self.setupView()
         self.setupNavigationBar()
-        self.location()
+        let group = DispatchGroup()
+        group.enter()
+        DispatchQueue.global().async {
+            self.location()
+            group.leave()
+        }
+        group.notify(queue: .main) {
+            self.getWeather()
+        }
+        
         UserDefaults.standard.set(true, forKey: "firstTime")
         
     }
@@ -248,6 +259,28 @@ class WeatherViewController: UIViewController {
         self.locationManager.delegate = self
     }
     
+    private func getWeather() {
+        getNowWeather(lat: self.lat, lon: self.lon) { weather in
+            let timeZone = weather.timezone ?? 0
+            timezone = timeZone
+            DispatchQueue.main.async {
+                self.wheather(data: weather)
+            }
+            
+        }
+        weatherSoon(lat: self.lat, lon: self.lon) { list in
+            self.list = list
+            DispatchQueue.main.async {
+                self.weatherCollectionView.reloadData()
+            }
+        }
+        weatherDaily(lat: self.lat, lon: self.lon) { daily in
+            self.daily = daily
+            DispatchQueue.main.async {
+                self.dailyTableView.reloadData()
+            }
+        }
+    }
 
    private func wheather(data: WheatherAnswer) {
         let temp = data.main?.temp ?? 0
@@ -319,7 +352,6 @@ extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return daily.count
         return 1
     }
     
@@ -329,35 +361,20 @@ extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        self.navigationController?.pushViewController(DayDetailViewController(daily: self.daily), animated: true)
+    }
 }
 extension WeatherViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let lat = manager.location?.coordinate.latitude ?? 0
         let lon = manager.location?.coordinate.longitude ?? 0
-        getNowWeather(lat: lat, lon: lon) { weather in
-            let timeZone = weather.timezone ?? 0
-            timezone = timeZone
-            DispatchQueue.main.async {
-                self.wheather(data: weather)
-            }
-            
-        }
-        weatherSoon(lat: lat, lon: lon) { list in
-            self.list = list
-            DispatchQueue.main.async {
-                self.weatherCollectionView.reloadData()
-            }
-        }
-        weatherDaily(lat: lat, lon: lon) { daily in
-            self.daily = daily
-            DispatchQueue.main.async {
-                self.dailyTableView.reloadData()
-            }
-        }
-        
-      
+        manager.stopUpdatingLocation()
+        self.lat = lat
+        self.lon = lon
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
