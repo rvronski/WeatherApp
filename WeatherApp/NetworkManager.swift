@@ -141,6 +141,7 @@ struct List: Codable {
     var weather: [Weather]?
     var clouds: Clouds?
     var wind: Wind?
+    var pop: Double?
     var dtTxt: String?
     
     enum CodingKeys: String, CodingKey {
@@ -149,6 +150,7 @@ struct List: Codable {
         case weather
         case clouds
         case wind
+        case pop
         case dtTxt = "dt_txt"
     }
 }

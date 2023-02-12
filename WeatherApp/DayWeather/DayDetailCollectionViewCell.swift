@@ -29,11 +29,7 @@ class DayDetailCollectionViewCell: UICollectionViewCell {
     
     func setup(daily: Daily) {
         let day = daily.dt ?? 0
-        let date = Date(timeIntervalSince1970: TimeInterval(day))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "d/MM E"
-        let newDay = dateFormatter.string(from: date)
-        self.dayLabel.text = newDay
+        self.dayLabel.text = dateFormatter(day: day)
     }
     
     private func setupView() {

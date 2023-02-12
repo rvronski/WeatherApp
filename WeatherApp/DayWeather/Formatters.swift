@@ -7,6 +7,8 @@
 
 import Foundation
 
+var timezone: Int = 0
+
 func unixTimeFormatter(time: Int) -> String {
     var correctTime = 0
     if timezone < 0 {
@@ -20,6 +22,21 @@ func unixTimeFormatter(time: Int) -> String {
     dateFormatter.timeZone = .gmt
     let stringTime = dateFormatter.string(from: date)
     return stringTime
+}
+
+func dateFormatter(day: Int) -> String {
+    var correctTime = 0
+    if timezone < 0 {
+        correctTime = timezone + day
+    } else {
+        correctTime = day + timezone
+    }
+    let date = Date(timeIntervalSince1970: TimeInterval(correctTime))
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "d/MM E"
+    dateFormatter.timeZone = .gmt
+    let newDay = dateFormatter.string(from: date)
+    return newDay
 }
 
 func moonPhaseFormatter(phase: Double) -> String {

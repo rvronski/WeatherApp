@@ -304,6 +304,7 @@ class WeatherViewController: UIViewController {
         self.cloudinessLabel.text = "\(clouds)"
         self.descriptionLabel.text = description.capitalizedSentence
         self.navigationItem.title = cityName
+      
     }
  
 }
@@ -323,6 +324,12 @@ extension WeatherViewController: UICollectionViewDelegateFlowLayout, UICollectio
         let itemWidth = (collectionView.frame.width - 32) / 6.2
         let itemHeigth = itemWidth * 2
         return CGSize(width: itemWidth, height: itemHeigth )
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let vc = DetailTwentyFourViewController()
+        vc.list = self.list
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
 }

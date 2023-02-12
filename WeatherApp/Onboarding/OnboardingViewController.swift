@@ -46,11 +46,11 @@ class OnboardingViewController: UIViewController {
         return button
     }()
     
-    private let firstTextLabel = InfoLabels(inform: "Разрешить приложению  Weather использовать данные \nо местоположении вашего устройства", frame: .zero, size: 16, weight: .semibold)
+    private let firstTextLabel = InfoLabels(inform: "Разрешить приложению  Weather использовать данные \nо местоположении вашего устройства", frame: .zero, size: 16, weight: .semibold, color: .white)
     
-    private let secondLabel = InfoLabels(inform: "Чтобы получить более точные прогнозы погоды во время движения или путешествия", frame: .zero, size: 14, weight: .regular)
+    private let secondLabel = InfoLabels(inform: "Чтобы получить более точные прогнозы погоды во время движения или путешествия", frame: .zero, size: 14, weight: .regular, color: .white)
     
-    private let thirdLabel = InfoLabels(inform: "Вы можете изменить свой выбор в любое время из меню приложения", frame: .zero, size: 14, weight: .regular)
+    private let thirdLabel = InfoLabels(inform: "Вы можете изменить свой выбор в любое время из меню приложения", frame: .zero, size: 14, weight: .regular, color: .white)
     
     override func viewDidLoad() {
         super.viewDidLoad()
