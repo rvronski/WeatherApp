@@ -92,57 +92,62 @@ responce:
     },
     ...
     },
+______________________________________
 
-{
-  "coord": {
-    "lon": 10.99,
-    "lat": 44.34                  
-  },
+            
+  
   "weather": [
     {
-      "id": 501,
-      "main": "Rain",
-      "description": "moderate rain",
-      "icon": "10d"
+     
+    "description": "moderate rain"   //data.weather.first?.description ?? ""
+      
     }
   ],
-  "base": "stations",
+  
   "main": {
-    "temp": 298.48,
-    "feels_like": 298.74,
-    "temp_min": 297.56,
-    "temp_max": 300.05,
-    "pressure": 1015,
-    "humidity": 64,
-    "sea_level": 1015,
-    "grnd_level": 933
+    "temp": 298.48,  // main?.temp ?? 0
+    
+    "temp_min": 297.56, ____ //data.main?.tempMin ?? 0
+    "temp_max": 300.05, ____ // data.main?.tempMax ?? 0
+    
+    "humidity": 64, _____// data.main?.humidity ?? 0
+    
   },
-  "visibility": 10000,
+  
   "wind": {
-    "speed": 0.62,
-    "deg": 349,
-    "gust": 1.18
+    "speed": 0.62, ___ //data.wind?.speed ?? 0
+    
   },
-  "rain": {
-    "1h": 3.16
-  },
+  
   "clouds": {
-    "all": 100
+    "all": 100 // data.clouds?.all ?? 0
   },
   "dt": 1661870592,
   "sys": {
-    "type": 2,
-    "id": 2075663,
-    "country": "IT",
-    "sunrise": 1661834187,
-    "sunset": 1661882248
+    "sunrise": 1661834187, // data.sys?.sunrise ?? 0
+    "sunset": 1661882248 // data.sys?.sunset ?? 0
   },
-  "timezone": 7200,
-  "id": 3163858,
-  "name": "Zocca",
-  "cod": 200
+  "timezone": 7200, // timezone
+  
+  "name": "Zocca", // data.name ?? ""
+  
 }
 
+        //let temp = data.main?.temp ?? 0
+       // let maxTemp = data.main?.tempMax ?? 0
+       // let minTemp = data.main?.tempMin ?? 0
+        //let clouds = data.clouds?.all ?? 0
+       // let humidity = data.main?.humidity ?? 0
+       // let wind = data.wind?.speed ?? 0
+       // let cityName = data.name ?? ""
+        //let description = data.weather.first?.description ?? ""
+        
+        
+        //let sunrise = data.sys?.sunrise ?? 0
+        
+       // let sunset = data.sys?.sunset ?? 0
+        
+______________________
 
       struct List: Codable {
       var dt: Int

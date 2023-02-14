@@ -59,88 +59,62 @@ import Foundation
 */
 
 
-struct Coords: Codable {
-    var lon: Double
-    var lat: Double
-}
 
-struct Weather: Codable {
-    var id: Int?
-    var main: String?
+struct WeatherCodable: Codable {
     var description: String?
     var icon: String?
 }
 
-struct Main: Codable {
+struct MainCodable: Codable {
     var temp: Double?
     var feelsLike: Double?
     var tempMin: Double?
     var tempMax: Double?
-    var pressure: Double?
     var humidity: Double?
-    var seaLevel: Int?
-    var grndLevel: Int?
+
     
     enum CodingKeys: String, CodingKey {
         case temp
         case feelsLike = "feels_like"
         case tempMin = "temp_min"
         case tempMax = "temp_max"
-        case pressure
         case humidity
-        case seaLevel = "sea_level"
-        case grndLevel = "grnd_level"
+        
     }
 }
 
-struct Wind: Codable {
+struct WindCodable: Codable {
     var speed: Double?
-    var deg: Int?
-    var gust: Double?
 }
 
-struct Rain: Codable {
-    var oneH: Double?
-    enum CodingKeys: String, CodingKey {
-        case oneH = "1h"
-    }
-}
+
 
 struct Clouds: Codable {
     var all: Int?
 }
 
 struct Sys: Codable {
-    var type: Int?
-    var id: Int?
-    var country: String?
     var sunrise: Int?
     var sunset: Int?
 }
 
 struct WheatherAnswer: Codable {
-    var coord: Coords
-    var weather: [Weather]
-    var main: Main?
-    var visibility: Int?
-    var wind: Wind?
-    var rain: Rain?
+    var weather: [WeatherCodable]
+    var main: MainCodable?
+    var wind: WindCodable?
     var clouds: Clouds?
     var dt: Int?
     var sys: Sys?
     var timezone: Int?
-    var id: Int?
     var name: String?
-    var cod: Int?
-    
 }
 
 struct List: Codable {
     var dt: Int?
-    var main: Main?
-    var weather: [Weather]?
+    var main: MainCodable?
+    var weather: [WeatherCodable]?
     var clouds: Clouds?
-    var wind: Wind?
+    var wind: WindCodable?
     var pop: Double?
     var dtTxt: String?
     
@@ -160,15 +134,11 @@ struct Temp: Codable {
     var min: Double
     var max: Double
     var night: Double
-    var eve: Double
-    var morn: Double
 }
 
 struct FeelLike: Codable {
     var day: Double
     var night: Double
-    var eve: Double
-    var morn: Double
 }
 
 struct Daily: Codable {
@@ -182,9 +152,8 @@ struct Daily: Codable {
     var feelsLike: FeelLike?
     var pressure: Int?
     var humidity: Int?
-    var dewPoint: Double?
     var windSpeed: Double?
-    var weather: [Weather]?
+    var weather: [WeatherCodable]?
     var clouds: Int?
     var uvi: Double?
     var pop: Double?
@@ -201,7 +170,6 @@ struct Daily: Codable {
         case feelsLike = "feels_like"
         case pressure
         case humidity
-        case dewPoint = "dew_point"
         case windSpeed = "wind_speed"
         case weather
         case clouds
@@ -212,22 +180,14 @@ struct Daily: Codable {
 }
 
 struct DailyAnswer: Codable {
-    var timezoneOffset: Int?
     var daily: [Daily]?
     
-    enum CodingKeys: String, CodingKey {
-        case timezoneOffset = "timezone_offset"
-        case daily
-    }
 }
 
 struct SoonAnswer: Codable {
-    var cnt: Int
     var list: [List]
 }
 
-//var lat: Double = 0
-//var lon: Double = 0
 
 func getNowWeather(lat:Double, lon: Double,  completion: @escaping (WheatherAnswer) -> Void) {
     let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"

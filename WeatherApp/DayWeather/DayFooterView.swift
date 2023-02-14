@@ -116,7 +116,7 @@ class DayFooterView: UITableViewHeaderFooterView {
             self.sunsetTimeLabel.leftAnchor.constraint(equalTo: self.sunsetLabel.rightAnchor,constant: 46),
             
             self.moonsetLabel.centerYAnchor.constraint(equalTo: self.sunsetLabel.centerYAnchor),
-            self.moonsetLabel.leftAnchor.constraint(equalTo: self.sunsetTimeLabel.rightAnchor, constant: 44),
+            self.moonsetLabel.leftAnchor.constraint(equalTo: self.moonriseLabel.leftAnchor),
             
             self.moonsetTimeLabel.centerYAnchor.constraint(equalTo: self.sunsetLabel.centerYAnchor),
             self.moonsetTimeLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor,constant: -20),

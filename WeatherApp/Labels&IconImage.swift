@@ -38,7 +38,7 @@ class WeatherLabels: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
+ let sizeLabel = CGSize(width: 30.0, height: 30.0)
 class IconImageView: UIImageView {
     init(picture: String) {
         super.init(frame: .zero)

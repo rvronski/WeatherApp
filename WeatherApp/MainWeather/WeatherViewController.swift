@@ -7,24 +7,22 @@
 
 import UIKit
 import CoreLocation
+import CoreData
 
 class WeatherViewController: UIViewController {
-    private let backgroundColor = #colorLiteral(red: 0.1254122257, green: 0.3044758141, blue: 0.778311789, alpha: 1)
+    
     private var list = [List]()
     private var daily = [Daily]()
     private var locationManager = CLLocationManager()
     private var lat: Double = 0
     private var lon: Double = 0
   
-//    private lazy var addWalletButton: UIButton = {
-//        let button = UIButton()
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//        button.setTitle("Создать кошелек", for: .normal)
-//        button.backgroundColor = .systemRed
-//        button.layer.cornerRadius = 20
-//        button.addTarget(self, action: #selector(didTapWalletButton), for: .touchUpInside)
-//        return button
-//    }()
+    let fetchResultController: NSFetchedResultsController = {
+        let fetchRequest = NowWeather.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dt", ascending: false)]
+        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CoreDataManager.shared.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        return frc
+    }()
     
     private lazy var dailyTableView: UITableView = {
         var tableView = UITableView(frame: .zero, style: .plain)
