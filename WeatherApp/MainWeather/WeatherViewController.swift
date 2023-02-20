@@ -24,6 +24,24 @@ class WeatherViewController: UIViewController {
         return frc
     }()
     
+    private lazy var notAuthView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.isHidden = true
+        return view
+    }()
+    
+    private lazy var addButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .black
+        button.setImage(UIImage(named: "buttonGeo"), for: .normal)
+        button.addTarget(self, action: #selector(geoForName), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
+    
     private lazy var dailyTableView: UITableView = {
         var tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -109,6 +127,7 @@ class WeatherViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ru")
         formatter.dateFormat = "HH:mm, E d MMMM"
         let dateString = formatter.string(from: Date())
         label.text = dateString
@@ -125,22 +144,39 @@ class WeatherViewController: UIViewController {
     private lazy var windLabel = WeatherLabels(size: 14, weight: .regular, color: .white)
     private lazy var descriptionLabel = WeatherLabels(size: 16, weight: .regular, color: .white)
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.color = .darkGray
+        return activityIndicator
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupView()
         self.setupNavigationBar()
-        let group = DispatchGroup()
-        group.enter()
-        DispatchQueue.global().async {
-            self.location()
-            group.leave()
+        if locationManager.authorizationStatus == .restricted {
+            self.notAuthView.isHidden = false
+            self.addButton.isHidden = false
+        } else if locationManager.authorizationStatus == .denied {
+            self.notAuthView.isHidden = false
+            self.addButton.isHidden = false
+        } else if locationManager.authorizationStatus == .notDetermined {
+            self.notAuthView.isHidden = false
+            self.addButton.isHidden = false
+        } else {
+            let group = DispatchGroup()
+            group.enter()
+            DispatchQueue.global().async {
+                self.location()
+                group.leave()
+            }
+            group.notify(queue: .main) {
+                self.getWeather()
+            }
+            
+            UserDefaults.standard.set(true, forKey: "firstTime")
         }
-        group.notify(queue: .main) {
-            self.getWeather()
-        }
-        
-        UserDefaults.standard.set(true, forKey: "firstTime")
-        
     }
     
     private func setupNavigationBar() {
@@ -148,7 +184,52 @@ class WeatherViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.hidesBackButton = true
         self.navigationController?.navigationBar.tintColor = .black
+        let rightButton = UIBarButtonItem(image: UIImage(named: "geo"), style: .done, target: self, action: #selector(geoForName))
+//        let leftButton = UIBarButtonItem(title: "Отменить", style: .plain, target: self, action: #selector(popVC))
+//        let rightButton = UIBarButtonItem(title: "Править", style: .plain, target: self, action: #selector(editButton))
+       
+//        rightButton.tintColor = .purple
+        self.navigationItem.rightBarButtonItem = rightButton
+//        navigationItem.rightBarButtonItem = rightButton
+
     }
+    
+    @objc private func geoForName() {
+        let alertController = UIAlertController(title: "Введите имя города", message: "", preferredStyle: .alert)
+        
+        alertController.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Город"
+        }
+        
+        let saveAction = UIAlertAction(title: "Ввести", style: .default, handler: { alert -> Void in
+            let firstTextField = alertController.textFields![0] as UITextField
+            guard let name = firstTextField.text else {return}
+            getWeatherWithoutGeo(name: name) { answer in
+                DispatchQueue.main.async {
+                    self.notAuthView.isHidden = true
+                    self.addButton.isHidden = true
+                    self.activityIndicator.isHidden = false
+                    self.activityIndicator.startAnimating()
+                    let lat = answer.coord?.lat ?? 0
+                    let lon = answer.coord?.lon ?? 0
+                    self.lat = lat
+                    self.lon = lon
+                    print(lat, lon)
+                    self.getWeather()
+                }
+            }
+        })
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil )
+        
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+        
+    }
+    
+    
     
     private func setupView() {
         self.view.backgroundColor = .white
@@ -170,9 +251,24 @@ class WeatherViewController: UIViewController {
         self.weatherView.addSubview(self.humidityImageView)
         self.weatherView.addSubview(self.cloudinessImageView)
         self.weatherView.addSubview(self.descriptionLabel)
-        
+        self.view.addSubview(self.notAuthView)
+        self.notAuthView.addSubview(self.addButton)
+        self.view.addSubview(self.activityIndicator)
         NSLayoutConstraint.activate([
         
+            self.activityIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            self.activityIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            
+            self.notAuthView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            self.notAuthView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            self.notAuthView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
+            self.notAuthView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
+            
+            self.addButton.centerXAnchor.constraint(equalTo: self.notAuthView.centerXAnchor),
+            self.addButton.centerYAnchor.constraint(equalTo: self.notAuthView.centerYAnchor),
+            self.addButton.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.3),
+            self.addButton.heightAnchor.constraint(equalTo: self.addButton.widthAnchor),
+            
             self.weatherView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 16),
             self.weatherView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 16),
             self.weatherView.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -16),
@@ -243,11 +339,7 @@ class WeatherViewController: UIViewController {
             self.dailyTableView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
             self.dailyTableView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
             self.dailyTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
-            
-            
-            
         ])
-        
         
     }
     
@@ -262,6 +354,8 @@ class WeatherViewController: UIViewController {
             let timeZone = weather.timezone ?? 0
             timezone = timeZone
             DispatchQueue.main.async {
+                self.activityIndicator.isHidden = false
+                self.activityIndicator.startAnimating()
                 self.wheather(data: weather)
             }
             
@@ -275,12 +369,15 @@ class WeatherViewController: UIViewController {
         weatherDaily(lat: self.lat, lon: self.lon) { daily in
             self.daily = daily
             DispatchQueue.main.async {
+                self.activityIndicator.isHidden = true
+                self.activityIndicator.stopAnimating()
                 self.dailyTableView.reloadData()
             }
         }
     }
 
-   private func wheather(data: WheatherAnswer) {
+    private func wheather(data: WheatherAnswer) {
+       
         let temp = data.main?.temp ?? 0
         let maxTemp = data.main?.tempMax ?? 0
         let minTemp = data.main?.tempMin ?? 0
@@ -302,7 +399,7 @@ class WeatherViewController: UIViewController {
         self.cloudinessLabel.text = "\(clouds)"
         self.descriptionLabel.text = description.capitalizedSentence
         self.navigationItem.title = cityName
-      
+       
     }
  
 }
@@ -333,10 +430,7 @@ extension WeatherViewController: UICollectionViewDelegateFlowLayout, UICollectio
 }
 extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
     
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        return daily.count
-//    }
-//
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.daily.count
     }

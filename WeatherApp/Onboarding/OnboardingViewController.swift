@@ -42,7 +42,7 @@ class OnboardingViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("НЕТ, Я БУДУ ДОБАВЛЯТЬ ЛОКАЦИИ", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-//        button.addTarget(self, action: #selector(didTapWalletButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
         return button
     }()
     
@@ -105,6 +105,10 @@ class OnboardingViewController: UIViewController {
     
     @objc private func didTapAcceptButton() {
         self.locationManager.requestWhenInUseAuthorization()
+        self.navigationController?.pushViewController(WeatherViewController(), animated: true)
+    }
+    
+    @objc private func didTapCancelButton() {
         self.navigationController?.pushViewController(WeatherViewController(), animated: true)
     }
     

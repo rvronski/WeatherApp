@@ -15,7 +15,7 @@ class GraphView: UIView {
    
     private enum Constants {
       static let cornerRadiusSize = CGSize(width: 8.0, height: 8.0)
-        static let sizeLabel = CGSize(width: 30.0, height: 30.0)
+        static let sizeLabel = CGSize(width: 50.0, height: 30.0)
       static let margin: CGFloat = 20.0
       static let topBorder: CGFloat = 60
       static let bottomBorder: CGFloat = 50
@@ -77,15 +77,25 @@ class GraphView: UIView {
       // Calculate the y point
           
       let topBorder = Constants.topBorder
+      print("🍎 topBorder =  \(topBorder)")
       let bottomBorder = Constants.bottomBorder
+      print("🍎 bottomBorder =  \(bottomBorder)")
       let graphHeight = height - topBorder - bottomBorder
+      print("🍎 graphHeight =  \(graphHeight)")
+      print("🍎 height =  \(height)")
       guard let maxValue = graphPoints.max() else {
         return
       }
       let columnYPoint = { (graphPoint: Int) -> CGFloat in
         let yPoint = CGFloat(graphPoint) / CGFloat(maxValue) * graphHeight
-          let point = yPoint - (graphHeight - bottomBorder) + 20
-        return  point
+          let point = yPoint - (graphHeight - topBorder)
+         let mimusPoint = graphHeight + topBorder - yPoint // Переворот графика
+          if graphPoint < 0 {
+              return mimusPoint
+          } else {
+              return point
+          }
+        
       }
       // Отрисовка линии графика
 

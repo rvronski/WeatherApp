@@ -6,6 +6,8 @@ API url(current): https://api.openweathermap.org/data/2.5/weather?lat=37.785834&
    (3hours forecast): https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}&lang=ru
    
   (daily forecast): https://api.openweathermap.org/data/3.0/onecall?lat={37.785834&lon=-122.406417&exclude=daily&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric
+  (geocoding)
+  https://api.openweathermap.org/data/2.5/weather?q=London&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric
   
 lat = Optional(37.785834)
 lon= Optional(-122.406417)
