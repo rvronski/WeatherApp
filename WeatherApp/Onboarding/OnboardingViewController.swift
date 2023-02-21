@@ -104,11 +104,13 @@ class OnboardingViewController: UIViewController {
     }
     
     @objc private func didTapAcceptButton() {
+        UserDefaults.standard.set(true, forKey: "WithGeo")
         self.locationManager.requestWhenInUseAuthorization()
         self.navigationController?.pushViewController(WeatherViewController(), animated: true)
     }
     
     @objc private func didTapCancelButton() {
+        UserDefaults.standard.set(false, forKey: "WithGeo")
         self.navigationController?.pushViewController(WeatherViewController(), animated: true)
     }
     

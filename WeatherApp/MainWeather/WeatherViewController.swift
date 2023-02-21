@@ -24,6 +24,13 @@ class WeatherViewController: UIViewController {
         return frc
     }()
     
+    private lazy var refreshControl: UIRefreshControl = {
+        let refresh = UIRefreshControl()
+        refresh.attributedTitle = NSAttributedString(string: "Идет обновление...")
+        refresh.addTarget(self, action: #selector(refreshing), for: UIControl.Event.valueChanged)
+       return refresh
+    }()
+    
     private lazy var notAuthView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -155,27 +162,41 @@ class WeatherViewController: UIViewController {
         super.viewDidLoad()
         self.setupView()
         self.setupNavigationBar()
-        if locationManager.authorizationStatus == .restricted {
-            self.notAuthView.isHidden = false
-            self.addButton.isHidden = false
-        } else if locationManager.authorizationStatus == .denied {
-            self.notAuthView.isHidden = false
-            self.addButton.isHidden = false
-        } else if locationManager.authorizationStatus == .notDetermined {
-            self.notAuthView.isHidden = false
-            self.addButton.isHidden = false
-        } else {
-            let group = DispatchGroup()
-            group.enter()
-            DispatchQueue.global().async {
-                self.location()
-                group.leave()
-            }
-            group.notify(queue: .main) {
-                self.getWeather()
-            }
-            
+        if UserDefaults.standard.bool(forKey: "WithGeo") {
+            self.getWeatherWithLocation()
             UserDefaults.standard.set(true, forKey: "firstTime")
+        } else {
+            if locationManager.authorizationStatus == .restricted {
+                self.notAuthView.isHidden = false
+                self.addButton.isHidden = false
+            } else if locationManager.authorizationStatus == .denied {
+                self.notAuthView.isHidden = false
+                self.addButton.isHidden = false
+            } else if locationManager.authorizationStatus == .notDetermined {
+                self.notAuthView.isHidden = false
+                self.addButton.isHidden = false
+            }
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if UserDefaults.standard.bool(forKey: "WithGeo") {
+            self.getWeatherWithLocation()
+        } else {
+            self.getWeather()
+        }
+    }
+    
+    private func getWeatherWithLocation() {
+        let group = DispatchGroup()
+        group.enter()
+        DispatchQueue.global().async {
+            self.location()
+            group.leave()
+        }
+        group.notify(queue: .main) {
+            self.getWeather()
         }
     }
     
@@ -185,13 +206,7 @@ class WeatherViewController: UIViewController {
         self.navigationItem.hidesBackButton = true
         self.navigationController?.navigationBar.tintColor = .black
         let rightButton = UIBarButtonItem(image: UIImage(named: "geo"), style: .done, target: self, action: #selector(geoForName))
-//        let leftButton = UIBarButtonItem(title: "Отменить", style: .plain, target: self, action: #selector(popVC))
-//        let rightButton = UIBarButtonItem(title: "Править", style: .plain, target: self, action: #selector(editButton))
-       
-//        rightButton.tintColor = .purple
         self.navigationItem.rightBarButtonItem = rightButton
-//        navigationItem.rightBarButtonItem = rightButton
-
     }
     
     @objc private func geoForName() {
@@ -236,6 +251,7 @@ class WeatherViewController: UIViewController {
         self.view.addSubview(self.weatherView)
         self.view.addSubview(self.weatherCollectionView)
         self.view.addSubview(self.dailyTableView)
+        self.dailyTableView.addSubview(self.refreshControl)
         self.weatherView.addSubview(self.ellipseImageView)
         self.weatherView.addSubview(self.sunriseImageView)
         self.weatherView.addSubview(self.sunsetImageView)
@@ -255,7 +271,9 @@ class WeatherViewController: UIViewController {
         self.notAuthView.addSubview(self.addButton)
         self.view.addSubview(self.activityIndicator)
         NSLayoutConstraint.activate([
-        
+            self.refreshControl.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            self.refreshControl.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            
             self.activityIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
             self.activityIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             
@@ -343,13 +361,34 @@ class WeatherViewController: UIViewController {
         
     }
     
+   @objc private func refreshing(sender:AnyObject) {
+        refreshBegin(newtext: "Refresh",
+              refreshEnd: {(x:Int) -> () in
+              self.getWeather()
+              self.refreshControl.endRefreshing()
+            
+              })
+      }
+      
+    func refreshBegin(newtext:String, refreshEnd: @escaping (Int) -> ()) {
+        DispatchQueue.global().async {
+            sleep(2)
+        }
+        
+        DispatchQueue.main.async {
+            refreshEnd(0)
+        }
+    }
+    
+    
+    
     private func location() {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.startUpdatingLocation()
         self.locationManager.delegate = self
     }
     
-    private func getWeather() {
+    @objc private func getWeather() {
         getNowWeather(lat: self.lat, lon: self.lon) { weather in
             let timeZone = weather.timezone ?? 0
             timezone = timeZone
@@ -429,6 +468,8 @@ extension WeatherViewController: UICollectionViewDelegateFlowLayout, UICollectio
     
 }
 extension WeatherViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

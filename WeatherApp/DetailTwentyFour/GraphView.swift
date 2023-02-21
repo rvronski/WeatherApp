@@ -22,8 +22,8 @@ class GraphView: UIView {
       static let colorAlpha: CGFloat = 0.3
       static let circleDiameter: CGFloat = 5.0
     }
-   var startColor: UIColor = #colorLiteral(red: 0.7152544856, green: 0.7761872411, blue: 0.9439151287, alpha: 1)
-   var endColor: UIColor = #colorLiteral(red: 0.9141461849, green: 0.9332635999, blue: 0.9784278274, alpha: 1)
+   var startColor: UIColor = #colorLiteral(red: 0.9141461849, green: 0.9332635999, blue: 0.9784278274, alpha: 1)
+   var endColor: UIColor = #colorLiteral(red: 0.7152544856, green: 0.7761872411, blue: 0.9439151287, alpha: 1)
 
   override func draw(_ rect: CGRect) {
       let graphPoints = temp.prefix(7)
