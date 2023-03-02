@@ -18,6 +18,7 @@ func unixTimeFormatter(time: Int) -> String {
     }
     let date = Date(timeIntervalSince1970: TimeInterval(correctTime))
     let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "ru")
     dateFormatter.dateFormat = "H:mm"
     dateFormatter.timeZone = .gmt
     let stringTime = dateFormatter.string(from: date)
@@ -33,6 +34,7 @@ func dateFormatter(day: Int) -> String {
     }
     let date = Date(timeIntervalSince1970: TimeInterval(correctTime))
     let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "ru")
     dateFormatter.dateFormat = "d/MM E"
     dateFormatter.timeZone = .gmt
     let newDay = dateFormatter.string(from: date)

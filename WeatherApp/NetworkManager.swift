@@ -6,59 +6,6 @@
 //
 
 import Foundation
-/*
-{
-  "coord": {
-    "lon": 10.99,
-    "lat": 44.34
-  },
-  "weather": [
-    {
-      "id": 501,
-      "main": "Rain",
-      "description": "moderate rain",
-      "icon": "10d"
-    }
-  ],
-  "base": "stations",
-  "main": {
-    "temp": 298.48,
-    "feels_like": 298.74,
-    "temp_min": 297.56,
-    "temp_max": 300.05,
-    "pressure": 1015,
-    "humidity": 64,
-    "sea_level": 1015,
-    "grnd_level": 933
-  },
-  "visibility": 10000,
-  "wind": {
-    "speed": 0.62,
-    "deg": 349,
-    "gust": 1.18
-  },
-  "rain": {
-    "1h": 3.16
-  },
-  "clouds": {
-    "all": 100
-  },
-  "dt": 1661870592,
-  "sys": {
-    "type": 2,
-    "id": 2075663,
-    "country": "IT",
-    "sunrise": 1661834187,
-    "sunset": 1661882248
-  },
-  "timezone": 7200,
-  "id": 3163858,
-  "name": "Zocca",
-  "cod": 200
-}
-*/
-
-
 
 struct WeatherCodable: Codable {
     var description: String?
@@ -99,6 +46,7 @@ struct Sys: Codable {
 }
 
 struct WheatherAnswer: Codable {
+    var coord: Coord?
     var weather: [WeatherCodable]
     var main: MainCodable?
     var wind: WindCodable?
@@ -139,6 +87,11 @@ struct Temp: Codable {
 struct FeelLike: Codable {
     var day: Double
     var night: Double
+}
+
+struct Coord: Codable {
+    var lon: Double
+    var lat: Double
 }
 
 struct Daily: Codable {
@@ -188,6 +141,36 @@ struct SoonAnswer: Codable {
     var list: [List]
 }
 
+
+func getWeatherWithoutGeo(name: String,  completion: @escaping (WheatherAnswer) -> Void) {
+    let urlString = "https://api.openweathermap.org/data/2.5/weather?q=\(name)&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"
+    guard let url = URL(string: urlString) else {return}
+    let session = URLSession(configuration: .default)
+    let task = session.dataTask(with: url) { data, response, error in
+        if let error {
+            print(error.localizedDescription)
+            return
+        }
+        
+        let statusCode = (response as? HTTPURLResponse)?.statusCode
+        if statusCode != 200 {
+            print("Status Code = \(String(describing: statusCode))")
+            return
+        }
+        guard let data else {
+            print("data = nil")
+            return
+        }
+        do {
+           let answer = try JSONDecoder().decode(WheatherAnswer.self, from: data)
+            completion(answer)
+            print(answer)
+        } catch {
+            print(error)
+        }
+    }
+    task.resume()
+}
 
 func getNowWeather(lat:Double, lon: Double,  completion: @escaping (WheatherAnswer) -> Void) {
     let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=b896c16fafb3a47b68b0a51b99fa50f2&lang=ru&units=metric"

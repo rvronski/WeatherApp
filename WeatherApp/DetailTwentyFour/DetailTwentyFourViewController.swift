@@ -26,7 +26,7 @@ class DetailTwentyFourViewController: UIViewController {
     private lazy var headerView: UIView = {
        let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = #colorLiteral(red: 0.9141461849, green: 0.9332635999, blue: 0.9784278274, alpha: 1)
+        view.backgroundColor = #colorLiteral(red: 0.7152544856, green: 0.7761872411, blue: 0.9439151287, alpha: 1)
         return view
     }()
     
